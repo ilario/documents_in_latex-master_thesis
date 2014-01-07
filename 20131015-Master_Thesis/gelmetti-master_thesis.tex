@@ -1,0 +1,364 @@
+%
+% Istruzioni di compilazione (per produrre il pdf): avere un texlive funzionante e i pacchetti che vengono richiesti qui sotto; lanciare i comandi
+% pdflatex gelmetti-master_thesis.tex
+% makeglossaries gelmetti-master_thesis
+% biber gelmetti-master_thesis
+% pdflatex gelmetti-master_thesis.tex
+% pdflatex gelmetti-master_thesis.tex
+% non so se sia necessario lanciare altre volte biber, makeglossaries o pdflatex, di certo male non fa.
+%
+
+\documentclass[a4paper,12pt,openright]{book}
+\usepackage[utf8]{inputenc}
+\usepackage[italian,english]{babel}
+\usepackage[binary-units]{siunitx} % Typesetting quantities in a consistent way
+\usepackage{chemmacros} 		% \ch{}
+\usepackage[backend=biber,labelnumber=true,url=false,isbn=false,maxcitenames=10,firstinits=true,sorting=none]{biblatex}
+\usepackage{chemnum}			% Package used to manage index of compounds and schemes
+\usepackage{graphicx}
+\usepackage{subcaption} %the subfigure and subfig packages are deprecated
+\usepackage{csquotes} 
+\usepackage[wide,ragged]{sidecap}%[ragged, margincaption, centerbody]
+\usepackage{ragged2e} % needed by ragged option of sidecap?
+\usepackage{chngcntr} % needed for setting option not resetting footnote counter at chapter end
+\usepackage{pgfplots} % graphs
+\usepackage{booktabs}
+\usepackage{lscape} %for big landscape figures, rotate the page
+\usepackage{afterpage} %for making landscape float
+\usepackage[section]{placeins} %keeps floats `in their place', preventing them from floating past a "\FloatBarrier" command into another section.
+\usepackage{float}
+\usepackage{eso-pic} %background image on titlepage
+\usepackage{transparent} %transparency for background image on titlepage
+\usepackage[format=hang,labelfont=bf,textfont=small]{caption}%personalize figure and table captions
+\usepackage[xindy,nonumberlist,acronym,nomain]{glossaries} %table of acronyms
+\usepackage{relsize}%needed by smaller in glossaries
+\usepackage{multirow}% for tables
+\usepackage[bottom,multiple]{footmisc} %bottom insert additional whitespace between the main text and the footnote rule rather than over-stretching the inter-paragraph glue AND to prevent the floats going below footnotes. This has to be loaded before fancyhdr
+\usepackage{fancyhdr}%page headers
+\usepackage[hmarginratio=1:1,vmarginratio=1:1,a4paper,marginparwidth=1.5cm,textheight=630pt]{geometry}% marginparwidth inserted only for wide sidecaps
+\usepackage{amssymb}% for the \square math symbol
+
+\renewcommand{\sfdefault}{cmbr}%for lighter sans serif
+\captionsetup[SCfigure]{format=plain}
+\pgfplotsset{compat=newest}
+\counterwithout{footnote}{chapter} % not resetting footnote counter at chapter end
+\newcommand{\HNMR}{$^1$\ch{H}-\textsmaller{NMR}}
+\newcommand{\CNMR}{$^{13}$\ch{C}-\textsmaller{NMR}}
+\pgfplotsset{tick label style={font=\small},label style={font=\small}}
+\let\oldch\ch %move the ch command, needed for redefinition
+\renewcommand{\ch}[1]{\textsf{\oldch{#1}}} %add sans serif to \ch
+
+\DeclareSIUnit\Molar{M}
+\DeclareSIUnit\rpm{rpm}
+\DeclareSIUnit\eq{eq}
+\DeclareSIUnit\eV{eV}
+\DeclareSIUnit\ppm{ppm}
+\DeclareSIUnit\unit{unit}
+
+\cmpd*[cmpd-label = 1S]{ig2-1} \cmpd*[cmpd-label = 2S]{ig2-2} \cmpd*[cmpd-label = P1S]{ig2-4} \cmpd*[cmpd-label = P2S]{ig2-8} \cmpd*[cmpd-label = 1]{ig2-9} \cmpd*[cmpd-label = 2]{ig2-10} \cmpd*[cmpd-label = P2]{ig2-15} \cmpd*[cmpd-label = 3]{ig2-16} \cmpd*[cmpd-label = 4]{ig2-17} \cmpd*[cmpd-label = P2SA]{ig2-19} \cmpd*[cmpd-label = P2ST]{ig2-22} \cmpd*[cmpd-label = 5]{ig2-21} \cmpd*[cmpd-label = P2S-PVP]{sz17}
+\newcommand{\tallcell}[2][c]{\begin{tabular}[#1]{@{}c@{}}#2\end{tabular}}
+\pgfplotsset{minor grid style={densely dotted,lightgray}}
+
+\bibliography{biblio}
+
+\newcounter{countA}
+\newcounter{countB}
+\newcounter{countC}
+\makeatletter%
+\DeclareCiteCommand{\superfootcite}[\cbx@wrap]%
+{\gdef\cbx@keys{}}%
+{\xappto\cbx@keys{\thefield{entrykey},}}%
+{}%
+{%
+\ifcsundef{cbx@lastin@\cbx@keys @\strfield{postnote}}%
+{\csnumgdef{cbx@lastin@\cbx@keys @\strfield{postnote}}{-1}}{}%
+\ifnumcomp{\value{countA}}{<}{\csuse{cbx@lastin@\cbx@keys @\strfield{postnote}}}%
+{%
+\footnotemark[\csuse{cbx@lastfn@\cbx@keys @\strfield{postnote}}]%
+}%
+{\addtocounter{footnote}{1}\addtocounter{countB}{1}%
+\xappto\cbx@cite{\noexpand\footnotemark[\value{countB}]%
+\noexpand\let\noexpand\thefootnote\noexpand\relax\noexpand\footnotetext%
+{%
+\noexpand\textsuperscript{\the\value{countB}}\fullcite{\cbx@keys}}%
+\csnumgdef{cbx@lastfn@\cbx@keys @\strfield{postnote}}{\value{\@mpfn}}%
+\csnumgdef{cbx@lastin@\cbx@keys @\strfield{postnote}}{\value{instcount}}}%
+\setcounter{countA}{\csuse{cbx@lastin@\cbx@keys @\strfield{postnote}}}}%
+}%
+\newrobustcmd{\cbx@wrap}[1]{#1\cbx@cite\gdef\cbx@cite{}}%
+\def\cbx@cite{}%
+\makeatother%
+
+\newcommand{\nota}[1]{\addtocounter{countC}{1}\textsuperscript{\roman{countC}}\addtocounter{footnote}{-1}{\let\thefootnote\relax\footnote{\textsuperscript{\roman{countC}} #1}}}
+
+
+
+
+\renewbibmacro*{name:andothers}{% Based on name:andothers from biblatex.def for "et al." in italic
+\ifboolexpr{
+test {\ifnumequal{\value{listcount}}{\value{liststop}}}
+and
+test \ifmorenames
+}
+{\ifnumgreater{\value{liststop}}{1}
+{\finalandcomma}
+{}%
+\andothersdelim\bibstring[\emph]{andothers}}
+{}}
+
+\hyphenation{tetra-hydro-furan di-chloro-methane enantio-purity oxy-methyl-ene di-chroic aceto-nitrile iso-propyl alk-oxy-amine poly-thio-phene di-chloride inter-chain photo-luminescence supra-molecular photo-gene-rated hetero-junction poly-thio-phenic di-block thio-phenic poly-thio-phene bi-layer macro-initiator poly-vinyl-pyridine homo-polymer path-length intra-molecular inter-molecular hydro-chloric poly-dispersity poly-disperse}
+\makeglossaries
+
+\title{Synthesis and Characterization of Chiral Polythiophenes}
+\author{Ilario Gelmetti}
+\date{15.10.2013}
+\begin{document}
+\pagestyle{plain}
+
+\selectlanguage{english}
+\frontmatter
+
+{\let\cleardoublepage\clearpage % i don't want openright in frontmatter
+
+\begin{titlepage}\begin{center}
+
+
+\AddToShipoutPicture*{
+\put(0,0){
+\parbox[b][\paperheight]{\paperwidth}{%
+\vfill
+\centering
+\transparent{0.02}%stampato risulta randomicamente più scuro o più chiato, on paper this image results much more visible (or less, randomly) than on screen
+	{\includegraphics[width=0.9\paperwidth]{img/unipi-logo.pdf}}%
+\vfill
+}
+}
+}
+
+	\makebox[\textwidth]{\centering{\includegraphics[width=.4\textwidth]{img/unipi-logo_con_testo.png}}}\\%
+	\medskip
+	\large{\textsc{Dipartimento di Chimica e Chimica Industriale}}\\
+		\rule{5cm}{1pt}\\
+	{
+\smallskip
+	{Master thesis in \textsc{Organic Chemistry}}}\\
+\vfill
+
+	\huge{\textsc{Synthesis and Characterization of Chiral Polythiophenes.}}\\
+\vfill
+	\footnotesize{Author:}\\
+	\large{Ilario Gelmetti}\\
+		\makebox[.2\textwidth]{\rule{0pt}{.02\textheight}}\\
+\end{center}
+\begin{small}
+\makebox{\parbox[b]{.8\textwidth}{
+
+
+
+	\flushleft{\textbf{Supervisors:}}
+		\flushright{\begin{tabular}{r c}
+		{\large Dr. Silvia Destri}&\makebox[.4\textwidth]{\dotfill}\\
+		&\\
+		&\\
+		{\large Prof. Lorenzo Di Bari}&\makebox[.4\textwidth]{\dotfill}\\
+		\end{tabular}}
+	\bigskip
+
+	\flushleft{\textbf{Author:}}
+		\flushright{\begin{tabular}{r c}
+		{\large Ilario Gelmetti}&\makebox[.4\textwidth]{\dotfill}\\
+		\end{tabular}}
+
+	\flushleft{\textbf{Examiner:}}
+		\flushright{\begin{tabular}{l c}
+		{\large Prof. Roberto Solaro}&\makebox[.4\textwidth]{\dotfill}\\
+		\end{tabular}}
+
+}}
+\bigskip
+	\begin{center}
+	\rule{3cm}{1pt}\\
+	Session: 15 October 2013\\
+	Academic year: 2012-2013\\
+	\end{center}
+\end{small}
+\end{titlepage}
+
+\addtocounter{page}{-1}
+
+\tableofcontents
+\listoffigures
+\listoftables
+
+\newacronym{NMRP}{\textsmaller{NMRP}}{nitroxide-mediated radical polymerization}
+\newacronym{GRIM}{\textsmaller{GRIM}}{Grignard metathesis}
+\newacronym{KCTP}{\textsmaller{KCTP}}{Kumada catalyst-transfer polycondensation}
+\newacronym{HOMO}{\textsmaller{HOMO}}{highest-energy occupied molecular orbital}
+\newacronym{LUMO}{\textsmaller{LUMO}}{lowest-energy unoccupied molecular orbital}
+\newacronym{PL}{\textsmaller{PL}}{photoluminescence}
+\newacronym{UVvis}{\textsmaller{UV}--vis}{ultraviolet--visible}
+\newacronym{P3HT}{\textsmaller{P3HT}}{poly(3-hexyl\-thiophene)}
+\newacronym{SEC}{\textsmaller{SEC}}{size exclusion chromatography}
+\newacronym{NMR}{\textsmaller{NMR}}{nuclear magnetic resonance}
+\newacronym{CD}{\textsmaller{CD}}{circular dichroism}
+\newacronym{DSC}{\textsmaller{DSC}}{differential scanning calorimetry}
+\newacronym{XRD}{\textsmaller{XRD}}{X--ray diffraction}
+\newacronym{PCBM}{\textsmaller{PC}$_{60}$\textsmaller{BM}}{phenyl-\ch{C}61-butyric acid methyl ester}
+\newacronym{BHJ}{\textsmaller{BHJ}}{bulk heterojunction}
+\newacronym{GCMS}{\textsmaller{GC--MS}}{gas chromatography--mass spectrometry}
+\newacronym{EI}{\textsmaller{EI}}{electron ionization}
+\newacronym{P4VP}{\textsmaller{P4VP}}{poly\-(4-vinyl\-pyridine)}
+\newacronym{nidppp}{\ch{Ni(dppp)Cl2}}{di\-chloro\-(1,3-bis(di\-phenyl\-phosph\-ino)\-propane)\-nickel} 
+\newacronym{nidppe}{\ch{Ni(dppe)Cl2}}{di\-chloro\-(1,3-bis(di\-phenyl\-phosph\-ino)\-ethane)\-nickel} 
+\newacronym{MALDI}{\textsmaller{MALDI--TOF MS}}{matrix-assisted laser desorption-ionization--time-of-flight mass spectrometry}
+\newacronym{NMR2D}{\textsmaller{NMR-2D}}{two-dimensional nuclear magnetic resonance}
+\newacronym{FTIR}{\textsmaller{FTIR}}{Fourier transform infrared spectroscopy}
+\newacronym{XRD2D}{\textsmaller{XRD-2D}}{two-dimensional X-ray diffraction}
+\newacronym{BrPhEtTIPNO}{\ch{BrPhEt}-\textsmaller{TIPNO}}{\textit{N-tert}-butyl-\textit{N}-(2-methyl-1-phenyl\-propyl)-\textit{O}-(1-(4-bromo\-phenyl)\-ethyl)\-hydroxyl\-amine}
+\newacronym{THF}{\textsmaller{THF}}{tetrahydrofuran}
+\newacronym{TCE}{\textsmaller{TCE}}{1,1,2,2-tetrachloroethane}
+\newacronym{WAXD}{\textsmaller{WAXD}}{wide-angle X--ray diffraction}
+\newacronym{SAXS}{\textsmaller{SAXS}}{small-angle X-ray scattering}
+\newacronym{TIPNO}{\textsmaller{TIPNO}}{2,2,5-tri\-methyl-4-phenyl-3-aza\-hexane-3-nitr\-oxide}
+\newacronym{PTFE}{\textsmaller{PTFE}}{poly\-tetra\-fluoro\-ethylene}
+\newacronym{FTO}{\textsmaller{FTO}}{fluorine tin oxide}
+\newacronym{PEDOT:PSS}{\textsmaller{PEDOT:PSS}}{poly\-(3,4-ethylene\-di\-oxy\-thiophene) poly\-(styrene\-sulfonate)}
+\newacronym{FF}{\textsmaller{FF}}{fill factor}
+\newacronym{PDI}{\textsmaller{PDI}}{polydispersity index}
+\newacronym{dppp}{dppp}{1,3-bis\-(di\-phenyl\-phosphino)\-propane}
+\newacronym{TLC}{\textsmaller{TLC}}{thin layer chromatography}
+
+
+\printglossary[type=\acronymtype
+]
+
+}%here ends openany and starts openright
+
+\cleardoublepage \vspace*{12cm}
+\begin{flushright}
+\large {\it Dedicata a mio padre. E a mia madre.}
+\end{flushright}
+
+\newgeometry{top=1in, bottom=1in, outer=1in, inner=1in}
+
+\chapter[Abstract]{\centering Abstract}
+We synthesized a novel semiconducting, regioregular chiral polythiophene with low polydispersity. 
+Two synthetic procedures and two enantiomeric excesses were employed and the corresponding materials (\cmpd+{ig2-4}, enantiopure, about 20 repeating units; \cmpd+{ig2-15}, enantiomerically enriched, about 60 units; \cmpd+{ig2-8}, enantiopure, about 50 units) were deeply characterized from molecular (\acrshort{NMR}, \acrshort{NMR2D}, \acrshort{MALDI} and \acrshort{SEC}), thermal (\acrshort{DSC}), structural (\acrshort{XRD}, \acrshort{XRD2D} and \acrshort{SAXS}) and optical (\acrshort{FTIR}, \acrshort{UVvis}, \acrshort{CD} and \acrshort{PL}) points of view. 
+Solutions in good and poor solvents, thin films and powders were examined. 
+The process of aggregate formation was followed by means of \acrshort{UVvis}, \acrfull{CD} and \acrfull{PL} spectroscopies in order to study the conformational geometry of the forming structures and investigate their relationship with the origin of the optical activity. The longest enantiopure poly\-thio\-phene was thereafter used as donor component of solar cell active layer and, after proper functionalization, as a macro\-initiator for the polymerization of a diblock copolymer with poly\-vinyl\-pyridine. This copolymer was characterized with \acrshort{NMR} and its aggregation studied with \acrshort{UVvis} and \acrshort{CD} spectroscopies.
+
+{
+\vfill
+\centering \rule{5cm}{1pt}\\
+\vfill
+}
+
+\selectlanguage{italian}
+\noindent
+In questo lavoro di tesi ho sintetizzato un poli\-tiofene regio\-regolare chirale avente bassa poli\-dispersità. Lo specifico semiconduttore organico che ho preparato non è mai stato riportato in letteratura. Sono state utilizzate due differenti procedure di polimerizzazione e due diversi eccessi enantiomerici ed i polimeri ottenuti (\cmpd+{ig2-4}, enantiopuro, circa 20 unità ripetitive; \cmpd+{ig2-15}, enantiomericamente arricchito, circa 60 unità; \cmpd+{ig2-8}, enantiopuro, circa 50 unità) sono stati ampiamente caratterizzati dal punto di vista molecolare (\acrshort{NMR}, \acrshort{NMR2D}, \acrshort{MALDI} e \acrshort{SEC}), termico (\acrshort{DSC}), strutturale (\acrshort{XRD}, \acrshort{XRD2D} e \acrshort{SAXS}) e ottico (\acrshort{FTIR}, \acrshort{UVvis}, \acrshort{CD} e \acrshort{PL}). I polimeri sono stati analizzati in soluzione di buon solvente, in miscela con cattivo solvente, in stato solido come film sottile e come polvere. 
+Il processo di aggregazione è stato seguito con spettroscopie \acrshort{UVvis}, dicroismo circolare (\acrshort{CD}) e fotoluminescenza (\acrshort{PL}) per studiare la conformazione delle strutture in crescita e l'origine supramolecolare dell'attività ottica. 
+Il politiofene enantiopuro %ottenuto 
+a più alto peso molecolare è stato testato come materiale donore in celle solari e, una volta adeguatamente funzionalizzato, è stato impiegato come macroiniziatore per la polimerizzazione di un secondo blocco polimerico di poli\-(vinil\-piridina). Il polimero a blocchi ottenuto è stato caratterizzato all'\acrshort{NMR} e la sua aggregazione è stata seguita con le spettroscopie \acrshort{UVvis} e \acrshort{CD}.
+
+\selectlanguage{english}
+\restoregeometry
+
+\fancypagestyle{plain}{% chapter pages use style plain
+\renewcommand{\headrulewidth}{0pt} % no top rule
+\fancyhf{}% clear all fields
+\fancyfoot[L]{\footnotesize{Ilario Gelmetti}}% left footer
+\fancyfoot[C]{\footnotesize{\textit{Synthesis and Characterization of Chiral Polythiophenes}}}
+\fancyfoot[R]{\thepage}% right footer
+}
+
+{
+\newpage
+\null\vfill
+% \vspace*{\fill}
+\begin{center}
+\includegraphics[width=0.3\textwidth]{img/cc-by-sa.pdf}
+
+\smallskip
+
+\textit{Creative Commons Attribution--ShareAlike license}
+\end{center}
+
+\bigskip
+
+\noindent
+You are free:
+
+
+to Share -- to copy, distribute and transmit the work
+\indent
+
+to Remix -- to adapt the work
+\indent
+
+to make commercial use of the work
+
+\medskip
+
+\noindent
+Under the following conditions:
+% \smallskip
+
+Attribution -- You must attribute the work in the manner specified by the author or licensor (but not in any way that suggests that they endorse you or your use of the work).
+\indent
+
+Share Alike -- If you alter, transform, or build upon this work, you may distribute the resulting work only under the same or similar license to this one. 
+}
+
+\mainmatter
+\pagestyle{headings}
+\chapter{Introduction}
+\graphicspath{ {./img/intro/} }
+\input{chap/introduction.tex}
+
+\input{chap/aim.tex}
+
+\chapter{Synthesis and Characterization}
+\graphicspath{ {./img/results/} }
+\input{chap/results.tex}
+
+\input{chap/further.tex}
+
+\chapter{Conclusions}
+
+\input{chap/conclusion.tex}
+
+\chapter{Experimental Section}
+
+\input{chap/experimental.tex}
+
+\chapter*{Ringraziamenti}
+
+Giunto alla fine di questa tesi voglio ringraziare chi mi ha aiutato, supportato o tenuto compagnia in questo lungo periodo di vita milanese.
+
+Ringrazio Stefania Zappia e Marco Toscanini che m'hanno insegnato moltissimo in laboratorio e m'hanno aiutato moltissimo, senza di loro non sarei riuscito a far nulla.
+
+Ringrazio i miei relatori: Silvia Destri e Lorenzo Di Bari per l'infinita pazienza che hanno avuto con me, per tutto il periodo di tesi ma soprattutto nelle ultime settimane quando la consegna si avvicinava.
+
+Ringrazio tutti coloro che mi hanno analizzato i miei materiali e mi hanno spiegato un mucchio di cose interessantissime: William Porzio, Filippo Samperi \& Salvo Battiato, Andrea Zampetti, Alberto Giacometti Scheroni \& Daniele Piovani, Antonella Boccia, Maurizio Canetti, Fabio Bertini \& Adriana Cacciamani, Wojtek Mroz, Francesco Zinna.
+
+Ringrazio i colleghi milanesi che sono stati la mia ancora di salvezza: Francesca, Elisa, Laura, Giorgio, Stefania, Marco, Wojtek, Sajjad.
+
+Ringrazio i milanesi non colleghi, che m'hanno accolto facendomi sentire a casa: tutto il gruppo di Manitese di Milano, la bella ggente del Macao, Accio e Alessandro in particolare, i volontari di Fà la cosa giusta, Valentina e Jean Paul in particolare, Daniela, Salvo, Ottilia e Alberto.
+
+Ringrazio moltisssssimo i pisani che m'hanno ospitato a Pisa nelle mie frequenti visite lampo e non: Svalo, Lucrezia, Ambra, Francesca, Ax, Costa, Bolzo, Soba, Yak, Pietro, Reca, Ciera.
+
+Ringrazio gli altri bellissimi personi pisani e veronesi che m'hanno sopportato nelle serate, nelle mailing list, d'estate e nei week end e a cui voglio un sacco di bbene: tutti i Lannari Mannari con l'aggiunta della Cò e della Giulietta, tutta la gioventù di eigenLab che m'ha tenuto compagnia perfino a distanza, tutto il mio anno di scienze della Normale, i compagni del corso di chimica organica, il compagno di lab Leo, tutte le bimbe e i bimbi chimici del dipartimento, il Picconi che non può mai mancare, Lorenzo, Filippo, il Cieratto e tutti gli ex del glorioso Timpano.
+
+Infine ringrazio mamma (ciao mamma!) e ringrazio la Normale soprattutto per avermi fatto conoscere un sacco di gente ganza.
+
+(sono sicuro di dimenticarmi qualcuno\ldots vabbè\ldots)
+
+\appendix \chapter{Supplementary Spectra}
+\graphicspath{ {./img/spectra/} }
+
+\renewcommand{\bottomfraction}{0.99} %aggiunto per far stare gli spettri nella prima pagina delle sezioni
+\setcounter{bottomnumber}{3} %aggiunto per far stare gli spettri nella prima pagina delle sezioni
+
+\input{chap/spectra.tex}
+
+\end{document}
